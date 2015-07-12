@@ -8,6 +8,10 @@
 		{
 			"ImportPath": "bitbucket.org/ckvist/twilio/twiml",
 			"Rev": "ceea1fc2b36b499d88ce826acc1124fed0ba8b75"
+		},
+		{
+			"ImportPath": "bitbucket.org/ckvist/twilio/twirest",
+			"Rev": "ceea1fc2b36b499d88ce826acc1124fed0ba8b75"
 		}
 	]
 }
