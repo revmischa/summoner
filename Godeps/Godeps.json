@@ -12,6 +12,11 @@
 		{
 			"ImportPath": "bitbucket.org/ckvist/twilio/twirest",
 			"Rev": "ceea1fc2b36b499d88ce826acc1124fed0ba8b75"
+		},
+		{
+			"ImportPath": "github.com/lib/pq",
+			"Comment": "go1.0-cutoff-56-gdc50b6a",
+			"Rev": "dc50b6ad2d3ee836442cf3389009c7cd1e64bb43"
 		}
 	]
 }
