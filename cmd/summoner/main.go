@@ -66,6 +66,14 @@ func SlackReply(w http.ResponseWriter, msg string) {
 //////////////
 
 func Summon(w http.ResponseWriter, r *http.Request) {
+    stoken := os.Getenv("SLACK_TOKEN")
+
+    if stoken != r.FormValue("token") {
+        log.Fatal("Got request with invalid slack auth token")
+        SlackReply(w, "Invalid auth token")
+        return
+    }
+
     target := r.FormValue("text")
     from := r.FormValue("user_name")
 
