@@ -1,15 +1,15 @@
 package main
 
 import (
-	"os"
-	"log"
-	"strings"
-	"encoding/json"
 	"bitbucket.org/ckvist/twilio/twiml"
 	"bitbucket.org/ckvist/twilio/twirest"
-	"net/http"
 	"database/sql"
+	"encoding/json"
 	_ "github.com/lib/pq"
+	"log"
+	"net/http"
+	"os"
+	"strings"
 )
 
 var (
@@ -51,7 +51,7 @@ func main() {
 
 	http.HandleFunc("/", helloMonkey)
 	http.HandleFunc("/summon", Summon)
-	http.ListenAndServe(":" + port, nil)
+	http.ListenAndServe(":"+port, nil)
 }
 
 func SlackReply(w http.ResponseWriter, msg string) {
@@ -59,7 +59,7 @@ func SlackReply(w http.ResponseWriter, msg string) {
 		return
 	}
 
-	res := map[string]string { "text": msg }
+	res := map[string]string{"text": msg}
 
 	b, err := json.Marshal(res)
 	if err != nil {
@@ -75,7 +75,7 @@ func SlackReply(w http.ResponseWriter, msg string) {
 //////////////
 
 func Summon(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8") 
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	stoken := os.Getenv("SLACK_TOKEN")
 
@@ -100,36 +100,36 @@ func Summon(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// look up person in DB
-	rows, err := db.Query("SELECT p.id,phone FROM person p FULL OUTER JOIN alias a on a.person=p.id WHERE p.phone IS NOT NULL AND " +
+	rows, err := db.Query("SELECT p.id,phone FROM person p FULL OUTER JOIN alias a on a.person=p.id WHERE p.phone IS NOT NULL AND "+
 		"( a.name=$1 OR p.name=$2 )", target, target)
-    if err != nil {
-        log.Println("Error querying person: " + err.Error())
-        return
-    }
-    defer rows.Close()
+	if err != nil {
+		log.Println("Error querying person: " + err.Error())
+		return
+	}
+	defer rows.Close()
 	var phone string
 	var personID int
-    for rows.Next() {
-    	err = rows.Scan(&personID, &phone)
-    	if err != nil {
-	        log.Println("Error querying person: " + err.Error())
-    		return
-    	}
-    	if phone != "" {
-    		log.Println("found phone: " + phone)
-    		break
-    	}
-    }
+	for rows.Next() {
+		err = rows.Scan(&personID, &phone)
+		if err != nil {
+			log.Println("Error querying person: " + err.Error())
+			return
+		}
+		if phone != "" {
+			log.Println("found phone: " + phone)
+			break
+		}
+	}
 
 	if phone == "" {
-		SlackReply(w, "Sorry, I don't have contact information for " + target)
+		SlackReply(w, "Sorry, I don't have contact information for "+target)
 		return
 	}
 
 	db.Exec("UPDATE person SET last_summon=NOW() WHERE id=$1", personID)
 
 	Initiate(phone, from)
-	SlackReply(w, "Summoning " + target)
+	SlackReply(w, "Summoning "+target)
 }
 
 func Initiate(num string, fromName string) {
@@ -140,9 +140,9 @@ func Initiate(num string, fromName string) {
 	client := twirest.NewClient(accountSid, authToken)
 
 	msg := twirest.SendMessage{
-			Text: "You have been summoned to chat by " + fromName,
-			To:   num,
-			From: fromNum}
+		Text: "You have been summoned to chat by " + fromName,
+		To:   num,
+		From: fromNum}
 
 	resp, err := client.Request(msg)
 	if err != nil {
