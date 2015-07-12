@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"log"
+	"strings"
 	"encoding/json"
 	"bitbucket.org/ckvist/twilio/twiml"
 	"bitbucket.org/ckvist/twilio/twirest"
@@ -89,7 +90,7 @@ func Summon(w http.ResponseWriter, r *http.Request) {
 	trigger := r.FormValue("trigger_word")
 
 	// remove trigger from target
-	target = target.Replace(trigger, "", 0)
+	target = strings.Replace(target, trigger, "", 0)
 
 	if target == "" {
 		log.Println("got request with no text")
