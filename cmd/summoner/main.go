@@ -86,6 +86,10 @@ func Summon(w http.ResponseWriter, r *http.Request) {
 
 	target := r.FormValue("text")
 	from := r.FormValue("user_name")
+	trigger := r.FormValue("trigger_word")
+
+	// remove trigger from target
+	target = target.Replace(trigger, "", 0)
 
 	if target == "" {
 		log.Println("got request with no text")
