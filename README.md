@@ -1,5 +1,7 @@
-# summoner
-Slack webhook for summoning users to chat via Twilio
+# Slack Summoner
+Slack webhook for summoning users to chat. Can call someone and SMS them. 
+Contact list is stored in a database, voice app functionality uses Twilio. 
+Built with Go, PostgreSQL, Heroku.
 
 # Demo
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=OwT5yEcZ6Zw
