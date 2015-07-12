@@ -1,0 +1,13 @@
+{
+	"ImportPath": "github.com/revmischa/summoner",
+	"GoVersion": "go1.4.2",
+	"Packages": [
+		"cmd/summoner/main.go"
+	],
+	"Deps": [
+		{
+			"ImportPath": "bitbucket.org/ckvist/twilio/twiml",
+			"Rev": "ceea1fc2b36b499d88ce826acc1124fed0ba8b75"
+		}
+	]
+}
