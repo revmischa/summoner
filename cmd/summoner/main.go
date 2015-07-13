@@ -72,6 +72,7 @@ func Summon(w http.ResponseWriter, r *http.Request) {
 	// remove trigger from target
 	target = strings.Replace(target, trigger, "", 1)
 	target = strings.TrimSpace(target)
+	target = strings.ToLower(target)
 
 	if target == "" {
 		log.Println("got request with no text")
