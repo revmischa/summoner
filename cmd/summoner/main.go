@@ -96,7 +96,6 @@ func Summon(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if phone != "" {
-			log.Println("found phone: " + phone)
 			break
 		}
 	}
@@ -108,8 +107,8 @@ func Summon(w http.ResponseWriter, r *http.Request) {
 
 	db.Exec("UPDATE person SET last_summon=NOW() WHERE id=$1", personID)
 
-	Initiate(phone, from)
-	SMS(phone)
+	Initiate(phone)
+	SMS(phone, from)
 	SlackReply(w, "Summoning "+target)
 }
 
@@ -122,7 +121,7 @@ func SMS(num string, fromName string) {
 		To:   num,
 		From: fromNum}
 
-	resp, err := client.Request(msg)
+	_, err := client.Request(msg)
 	if err != nil {
 		log.Println(err)
 		return
@@ -139,7 +138,7 @@ func Initiate(num string) {
 		From: fromNum,
 		ApplicationSid: callSid}
 
-	resp, err := client.Request(msg)
+	_, err := client.Request(msg)
 	if err != nil {
 		log.Println(err)
 		return
@@ -152,11 +151,11 @@ func summonCallback(w http.ResponseWriter, r *http.Request) {
 
 	r.ParseForm()
 	resp.Action(
-		twiml.Play{Url: "http://demo.twilio.com/hellomonkey/monkey.mp3"})
+		twiml.Play{Url: "http://funnyinternetjokes.com/huhuhuhuhuhuhuhu.mp3"})
 	resp.Send(w)
 }
 
-func TwiREST() (twirest.Client) {
+func TwiREST() *twirest.TwilioClient {
 	accountSid := os.Getenv("ACCT_SID")
 	authToken := os.Getenv("AUTH_TOKEN")	
 	client := twirest.NewClient(accountSid, authToken)
