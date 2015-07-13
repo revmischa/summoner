@@ -16,26 +16,6 @@ var (
 	db *sql.DB = nil
 )
 
-func helloMonkey(w http.ResponseWriter, r *http.Request) {
-	callers := map[string]string{"+15005550001": "Langur"}
-
-	resp := twiml.NewResponse()
-
-	r.ParseForm()
-	from := r.Form.Get("From")
-	caller, ok := callers[from]
-
-	msg := "Hello monkey"
-	if ok {
-		msg = "Hello " + caller
-	}
-
-	resp.Action(
-		twiml.Say{Text: msg},
-		twiml.Play{Url: "http://demo.twilio.com/hellomonkey/monkey.mp3"})
-	resp.Send(w)
-}
-
 func main() {
 	var errd error
 
@@ -49,7 +29,7 @@ func main() {
 		log.Fatalf("Error opening database: %q", errd)
 	}
 
-	http.HandleFunc("/", helloMonkey)
+	http.HandleFunc("/summonCallback", summonCallback)
 	http.HandleFunc("/summon", Summon)
 	http.ListenAndServe(":"+port, nil)
 }
@@ -129,15 +109,13 @@ func Summon(w http.ResponseWriter, r *http.Request) {
 	db.Exec("UPDATE person SET last_summon=NOW() WHERE id=$1", personID)
 
 	Initiate(phone, from)
+	SMS(phone)
 	SlackReply(w, "Summoning "+target)
 }
 
-func Initiate(num string, fromName string) {
-	accountSid := os.Getenv("ACCT_SID")
-	authToken := os.Getenv("AUTH_TOKEN")
-	fromNum := os.Getenv("FROM_NUM")
-
-	client := twirest.NewClient(accountSid, authToken)
+func SMS(num string, fromName string) {
+	client := TwiREST()
+	fromNum := os.Getenv("SMS_FROM_NUM")
 
 	msg := twirest.SendMessage{
 		Text: "You have been summoned to chat by " + fromName,
@@ -149,6 +127,38 @@ func Initiate(num string, fromName string) {
 		log.Println(err)
 		return
 	}
+}
 
-	log.Print(resp.Message.Status)
+func Initiate(num string) {
+	client := TwiREST()
+	fromNum := os.Getenv("CALL_FROM_NUM")
+	callSid := os.Getenv("CALL_APPLICATION_SID")
+
+	msg := twirest.MakeCall{
+		To:   num,
+		From: fromNum,
+		ApplicationSid: callSid}
+
+	resp, err := client.Request(msg)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+}
+
+/* when caller picks up */
+func summonCallback(w http.ResponseWriter, r *http.Request) {
+	resp := twiml.NewResponse()
+
+	r.ParseForm()
+	resp.Action(
+		twiml.Play{Url: "http://demo.twilio.com/hellomonkey/monkey.mp3"})
+	resp.Send(w)
+}
+
+func TwiREST() (twirest.Client) {
+	accountSid := os.Getenv("ACCT_SID")
+	authToken := os.Getenv("AUTH_TOKEN")	
+	client := twirest.NewClient(accountSid, authToken)
+	return client
 }
