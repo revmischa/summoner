@@ -152,7 +152,7 @@ func summonCallback(w http.ResponseWriter, r *http.Request) {
 
 	r.ParseForm()
 	resp.Action(
-		twiml.Play{Url: "http://hard.chat/summoner/summon1.mp3"})
+		twiml.Play{Url: "https://s3-us-west-2.amazonaws.com/hard.chat/summoner/summon1.mp3"})
 	resp.Send(w)
 }
 
